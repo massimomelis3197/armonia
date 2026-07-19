@@ -63,11 +63,7 @@ const SCENES = [
     audio: 'audio/audio2/fondale.mp3',
     bg: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=1920&auto=format&fit=crop'
   },
-  {
-    id: 'jbar', name: 'Jazz bar', emoji: '🎷',
-    audio: 'audio/audio3/jbar.mp3',
-    bg: 'https://images.unsplash.com/photo-1585320426283-6599b42b85ee?q=80&w=1920&auto=format&fit=crop'
-  },
+ 
   {
     id: 'mare', name: 'Mare calmo', emoji: '🌊',
     audio: 'audio/audio3/mare.mp3',
