@@ -66,7 +66,7 @@ const SCENES = [
   {
     id: 'jbar', name: 'Jazz bar', emoji: '🎷',
     audio: 'audio/audio3/jbar.mp3',
-    bg: 'https://images.unsplash.com/photo-1581717070062-e388aba6f27a?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://images.unsplash.com/photo-1585320426283-6599b42b85ee?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'mare', name: 'Mare calmo', emoji: '🌊',
@@ -86,7 +86,7 @@ const SCENES = [
   {
     id: 'neve', name: 'Bufera di neve', emoji: '❄️',
     audio: 'audio/audio4/neve.mp3',
-    bg: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://plus.unsplash.com/premium_photo-1675715923850-b5be1d5d71a7?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'pioggia', name: 'Pioggia', emoji: '🌧️',
