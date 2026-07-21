@@ -87,7 +87,7 @@ const SCENES = [
   {
     id: 'pioggia', name: 'Pioggia', emoji: '🌧️',
     audio: 'audio/audio4/pioggia.mp3',
-    bg: 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://images.unsplash.com/photo-1610741083757-1ae88e1a17f7?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'ruscello', name: 'Ruscello', emoji: '💧',
