@@ -1094,6 +1094,7 @@ function renderAlarmStatus(){
 }
 alarmStartBtn.addEventListener('click', ()=>{
   if (!alarmTimeInput.value) return;
+  primeAlertAudio();
   activeAlarm = { time: alarmTimeInput.value };
   renderAlarmStatus();
   saveStoredState({ activeAlarm });
@@ -1117,7 +1118,44 @@ setInterval(()=>{
   }
 }, 1000);
 
+/* ---------------- SUONO DI NOTIFICA (sveglia / timer) ----------------
+   Genera un breve segnale sonoro via Web Audio API, senza bisogno di
+   alcun file audio esterno. Viene riprodotto quando la sveglia suona o
+   il timer arriva a zero. */
+let alertAudioCtx = null;
+function primeAlertAudio(){
+  // Va chiamata da un gesto diretto dell'utente (click su "Avvia"), così
+  // il browser sblocca l'audio in anticipo e il beep potrà suonare più
+  // tardi anche se scatta da un timer in background.
+  try {
+    if (!alertAudioCtx) alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (alertAudioCtx.state === 'suspended') alertAudioCtx.resume();
+  } catch(e){ /* Web Audio non disponibile: si ignora silenziosamente */ }
+}
+function playAlertSound(){
+  try {
+    if (!alertAudioCtx) alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (alertAudioCtx.state === 'suspended') alertAudioCtx.resume();
+    const now = alertAudioCtx.currentTime;
+    const beepTimes = [0, 0.35, 0.7, 1.05]; // 4 brevi beep in sequenza
+    beepTimes.forEach((t)=>{
+      const osc = alertAudioCtx.createOscillator();
+      const gain = alertAudioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0, now + t);
+      gain.gain.linearRampToValueAtTime(0.35, now + t + 0.02);
+      gain.gain.linearRampToValueAtTime(0, now + t + 0.22);
+      osc.connect(gain);
+      gain.connect(alertAudioCtx.destination);
+      osc.start(now + t);
+      osc.stop(now + t + 0.25);
+    });
+  } catch(e){ /* Web Audio non disponibile: si ignora silenziosamente */ }
+}
+
 function triggerAlarm(a){
+  playAlertSound();
   openWidget('tools');
   toolsSubnav.showView('alarm');
   const original = document.title;
@@ -1135,8 +1173,9 @@ const timerDisplay = document.getElementById('timerDisplay');
 const timerStatus = document.getElementById('timerStatus');
 const timerStartBtn = document.getElementById('timerStartBtn');
 const timerResetBtn = document.getElementById('timerResetBtn');
-const timerMinusBtn = document.getElementById('timerMinus');
-const timerPlusBtn = document.getElementById('timerPlus');
+const timerNudgeTrack = document.getElementById('timerNudgeTrack');
+const timerNudgeFill = document.getElementById('timerNudgeFill');
+const timerNudgeHandle = document.getElementById('timerNudgeHandle');
 
 let timerDuration = STORED.timerDuration || 5 * 60; // durata impostata (secondi), default 5 min (ripristinata se salvata)
 let timerRemaining = timerDuration;
@@ -1161,10 +1200,77 @@ function adjustTimer(deltaMin){
   renderTimer();
   saveStoredState({ timerDuration });
 }
-timerMinusBtn.addEventListener('click', ()=> adjustTimer(-1));
-timerPlusBtn.addEventListener('click', ()=> adjustTimer(1));
+
+/* Manovella: trascinando dal centro verso destra/sinistra si aggiunge o
+   toglie tempo in tempo reale (fino a ±10 minuti per corsa completa).
+   Al rilascio la manovella torna sempre al centro, pronta per un nuovo colpo. */
+let nudging = false;
+const NUDGE_MAX_MIN = 10;
+
+function nudgeFromClientX(clientX){
+  const rect = timerNudgeTrack.getBoundingClientRect();
+  const pct = Math.min(100, Math.max(0, (clientX - rect.left) / rect.width * 100));
+  const offset = pct - 50; // -50..+50
+  const deltaMin = (offset / 50) * NUDGE_MAX_MIN;
+
+  timerNudgeHandle.style.left = pct + '%';
+  timerNudgeFill.style.left = (offset < 0 ? pct : 50) + '%';
+  timerNudgeFill.style.width = Math.abs(offset) + '%';
+  timerNudgeHandle.setAttribute('aria-valuenow', Math.round(deltaMin));
+
+  const preview = Math.max(60, Math.min(180*60, timerDuration + deltaMin*60));
+  timerDisplay.textContent = timerFormat(preview);
+  timerNudgeHandle.dataset.pendingDelta = deltaMin;
+}
+
+function resetNudgeHandle(){
+  timerNudgeHandle.style.left = '50%';
+  timerNudgeFill.style.left = '50%';
+  timerNudgeFill.style.width = '0%';
+  timerNudgeHandle.setAttribute('aria-valuenow', 0);
+}
+
+timerNudgeHandle.addEventListener('pointerdown', (e)=>{
+  if (timerRunning) return; // non modificabile mentre è in corso
+  nudging = true;
+  timerNudgeTrack.classList.add('dragging');
+  timerNudgeHandle.setPointerCapture(e.pointerId);
+  e.preventDefault();
+});
+timerNudgeHandle.addEventListener('pointermove', (e)=>{
+  if (!nudging) return;
+  nudgeFromClientX(e.clientX);
+});
+function endNudge(){
+  if (!nudging) return;
+  nudging = false;
+  timerNudgeTrack.classList.remove('dragging');
+  const deltaMin = parseFloat(timerNudgeHandle.dataset.pendingDelta || '0');
+  if (deltaMin) adjustTimer(deltaMin);
+  else renderTimer();
+  resetNudgeHandle();
+}
+timerNudgeHandle.addEventListener('pointerup', endNudge);
+timerNudgeHandle.addEventListener('pointercancel', endNudge);
+
+// Click diretto sulla barra: applica subito lo spostamento come se fosse un trascinamento
+timerNudgeTrack.addEventListener('click', (e)=>{
+  if (timerRunning || e.target === timerNudgeHandle) return;
+  nudgeFromClientX(e.clientX);
+  const deltaMin = parseFloat(timerNudgeHandle.dataset.pendingDelta || '0');
+  if (deltaMin) adjustTimer(deltaMin);
+  resetNudgeHandle();
+});
+
+// Frecce da tastiera quando la maniglia ha il focus: ±1 minuto
+timerNudgeHandle.addEventListener('keydown', (e)=>{
+  if (e.key === 'ArrowRight' || e.key === 'ArrowUp'){ adjustTimer(1); e.preventDefault(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowDown'){ adjustTimer(-1); e.preventDefault(); }
+});
+
 
 timerStartBtn.addEventListener('click', ()=>{
+  primeAlertAudio();
   if (timerRunning){
     timerRunning = false;
     clearInterval(timerInterval);
@@ -1184,6 +1290,7 @@ timerStartBtn.addEventListener('click', ()=>{
       clearInterval(timerInterval);
       timerStatus.textContent = 'Tempo scaduto!';
       renderTimer();
+      playAlertSound();
       openWidget('tools');
       toolsSubnav.showView('timer');
       const original = document.title;

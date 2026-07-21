@@ -187,10 +187,14 @@
 
       <div class="subnav-view" data-view="timer">
         <div class="sw-time" id="timerDisplay">05:00</div>
-        <div class="timer-adjust">
-          <button class="sw-icon-btn" id="timerMinus" aria-label="Togli un minuto">−1m</button>
-          <button class="sw-icon-btn" id="timerPlus" aria-label="Aggiungi un minuto">+1m</button>
+        <div class="timer-nudge-track" id="timerNudgeTrack">
+          <div class="timer-nudge-center"></div>
+          <div class="timer-nudge-fill" id="timerNudgeFill"></div>
+          <div class="timer-nudge-handle" id="timerNudgeHandle" tabindex="0" role="slider"
+               aria-valuemin="-10" aria-valuemax="10" aria-valuenow="0"
+               aria-label="Trascina per aggiungere o togliere minuti al timer"></div>
         </div>
+        <div class="timer-nudge-labels"><span>−10 min</span><span>+10 min</span></div>
         <div class="sw-buttons">
           <button class="sw-btn primary" id="timerStartBtn">Avvia</button>
           <button class="sw-btn" id="timerResetBtn">Azzera</button>
