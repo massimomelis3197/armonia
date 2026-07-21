@@ -193,6 +193,28 @@ html,body{
 /* ================= TOP-RIGHT: settings gear + sound panel ================= */
 .settings-gear,
 .clear-widgets-btn{
+  background: none;
+  isolation: isolate; /* mantiene lo pseudo-elemento contenuto dentro il bottone */
+}
+.settings-gear::before,
+.clear-widgets-btn::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur));
+  z-index: -1;
+}
+.settings-gear:hover::before,
+.settings-gear.open::before,
+.clear-widgets-btn:hover::before{
+  background: var(--glass-strong);
+}
+
+.settings-gear,
+.clear-widgets-btn{
   -webkit-appearance: none;
   appearance: none;
 }
