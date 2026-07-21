@@ -178,16 +178,17 @@ html,body{
   font-size:22px;
   letter-spacing:0.01em;
   color:var(--text);
-  opacity:0.92;
   display:flex; align-items:center; gap:9px;
   user-select:none;
 }
+.brand-label{ opacity:0.92; }
 .brand::before{
   content:'';
   width:9px; height:9px;
   border-radius:50%;
   background: rgba(255,255,255,0.85);
   box-shadow: 0 0 10px rgba(255,255,255,0.7);
+  opacity:0.92;
 }
 
 /* ================= TOP-RIGHT: settings gear + sound panel ================= */
