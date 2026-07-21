@@ -198,7 +198,7 @@ html,body{
   border-radius:50%;
   background: none;
   isolation: isolate;
-  border:1px solid var(--glass-border);
+  border:1.3px solid var(--glass-border);
   color:var(--text);
   display:flex; align-items:center; justify-content:center;
   cursor:pointer;
@@ -227,7 +227,7 @@ html,body{
   border-radius:50%;
   background: none;
   isolation: isolate;
-  border:1px solid var(--glass-border);
+  border:1.3px solid var(--glass-border);
   color:var(--text);
   cursor:pointer;
   transition: background .2s, transform .2s;
