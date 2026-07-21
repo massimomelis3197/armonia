@@ -41,7 +41,7 @@ const SCENES = [
   {
     id: 'caffetteria', name: 'Caffetteria', emoji: '☕',
     audio: 'audio/audio1/caffetteria.mp3',
-    bg: 'https://plus.unsplash.com/premium_photo-1670984940156-c7f833fe8397?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'caminetto', name: 'Caminetto acceso', emoji: '🔥',
@@ -51,7 +51,7 @@ const SCENES = [
   {
     id: 'cascata', name: 'Cascata', emoji: '💦',
     audio: 'audio/audio2/cascata.mp3',
-    bg: 'https://plus.unsplash.com/premium_photo-1675448891094-0f3acc556fdb?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://images.unsplash.com/photo-1730456588662-3d95038308f9?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'fiume', name: 'Fiume', emoji: '🌊',
