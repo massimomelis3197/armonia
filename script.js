@@ -41,17 +41,17 @@ const SCENES = [
   {
     id: 'caffetteria', name: 'Caffetteria', emoji: '☕',
     audio: 'audio/audio1/caffetteria.mp3',
-    bg: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://images.unsplash.com/photo-1613274554329-70f997f5789f?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'caminetto', name: 'Caminetto acceso', emoji: '🔥',
     audio: 'audio/audio2/caminetto.mp3',
-    bg: 'https://images.unsplash.com/photo-1595770205769-84b55f75a053?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://images.unsplash.com/photo-1507048947301-7afc2aca0edc?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'cascata', name: 'Cascata', emoji: '💦',
     audio: 'audio/audio2/cascata.mp3',
-    bg: 'https://images.unsplash.com/photo-1730456588662-3d95038308f9?q=80&w=1920&auto=format&fit=crop'
+    bg: 'https://images.unsplash.com/photo-1519582149095-fe7d19b2a3d2?q=80&w=1920&auto=format&fit=crop'
   },
   {
     id: 'fiume', name: 'Fiume', emoji: '🌊',
