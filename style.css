@@ -1111,8 +1111,8 @@ html,body{
   /* Gap standardizzato verso l'Orologio (sopra) e verso il Widget
      Principale (sotto), identico per Calendario, Strumenti e Note/Elenco */
   #widget-calendar.mobile-slot-top, #widget-tools.mobile-slot-top, #widget-noteslist.mobile-slot-top{
-    top: calc(7vh + 75px) !important;
-    max-height: calc(93vh - 448px) !important;
+    top: calc(7vh + 95px) !important;
+    max-height: calc(93vh - 430px) !important;
   }
   /* Annulla il vincolo interno ereditato dal breakpoint tablet (che
      altrimenti si applicherebbe anche qui, rendendo Strumenti più piccolo
