@@ -623,6 +623,7 @@ html,body{
 #widget-calendar{
   top: 84px; left: 24px;
   width: 300px;
+    max-height: calc(100vh - 340px);
 }
 /* Note/Elenco (widget unificato con navigazione interna a frecce): destra */
 #widget-noteslist{
