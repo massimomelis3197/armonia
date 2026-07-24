@@ -1023,6 +1023,14 @@ html,body{
     --sar: env(safe-area-inset-right, 0px);
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
+    /* Gap standard usato in tutta la UI mobile (identico tra Dock↔Player,
+       e ora anche tra Widget↔Player). Unica fonte di verità: cambia qui
+       per aggiornare entrambi i punti insieme. */
+    --gap: 16px;
+    /* Altezza approssimativa del player (icona 44px + riga durata ~23px +
+       gap interno 14px + padding verticale 42px), usata per calcolare fino
+       a dove i widget possono espandersi senza mai sovrapporlo. */
+    --player-h: 132px;
   }
 
   html, body{ height: 100vh; height: 100dvh; }
@@ -1111,15 +1119,18 @@ html,body{
   }
 
   /* Orologio: posizione FISSA in alto su OGNI schermata, priorità assoluta,
-     non eliminabile, non entra mai nel sistema a pagine/slot. Box leggermente
-     ingrandito e testo leggermente ridotto per più margine e leggibilità,
-     evitando ritagli. Il top usa vh come fallback e dvh come valore reale
-     (ignorato dai browser che non lo supportano, che restano su vh). */
+     non eliminabile, non entra mai nel sistema a pagine/slot. Ancora della
+     posizione dell'intero blocco (Orologio → Calendario/Strumenti/Note →
+     dots), spostata più in basso rispetto a prima per lasciare più respiro
+     sotto le icone in alto. Box leggermente ingrandito e testo leggermente
+     ridotto per più margine e leggibilità, evitando ritagli. Il top usa vh
+     come fallback e dvh come valore reale (ignorato dai browser che non lo
+     supportano, che restano su vh). */
   #widget-clock{
     left:50% !important;
     right:auto !important;
-    top: 7vh !important;
-    top: calc(7dvh + var(--sat)) !important;
+    top: 11vh !important;
+    top: calc(11dvh + var(--sat)) !important;
     bottom: auto !important;
     transform: translateX(-50%) scale(0.94) !important;
     width: min(90vw, 390px) !important;
@@ -1155,11 +1166,28 @@ html,body{
      supera mai lo spazio realmente disponibile, calcolato con dvh + safe
      area così da restare corretta anche quando la barra indirizzo si
      nasconde/mostra durante lo scroll. */
+  /* Gap standardizzato verso l'Orologio (sopra) e verso il Widget Principale
+     (sotto), identico per Calendario, Strumenti e Note/Elenco: il box si
+     espande verso il basso fino a fermarsi a --gap (16px, lo stesso usato
+     tra Dock e Player) dal bordo superiore del Player, invece di un'altezza
+     fissa arbitraria. max-height è comunque vincolata con clamp(): non
+     scende mai sotto un minimo leggibile (niente contenuto "schiacciato"/
+     tagliato a metà riga) e non supera mai lo spazio realmente disponibile,
+     calcolato con dvh + safe area così da restare corretta anche quando la
+     barra indirizzo si nasconde/mostra durante lo scroll. */
   #widget-calendar.mobile-slot-top, #widget-tools.mobile-slot-top, #widget-noteslist.mobile-slot-top{
-    top: calc(7vh + 95px) !important;
-    top: calc(7dvh + 95px + var(--sat)) !important;
-    max-height: calc(93vh - 480px) !important;
-    max-height: clamp(180px, calc(93dvh - 480px - var(--sat) - var(--sab)), 420px) !important;
+    top: calc(11vh + 95px) !important;
+    top: calc(11dvh + 95px + var(--sat)) !important;
+    max-height: calc(89vh - 386px) !important;
+    max-height: clamp(
+      220px,
+      calc(
+        100dvh
+        - (11dvh + 95px + var(--sat))
+        - (var(--sab) + 47px + (var(--dock-h) - 20px) + (var(--gap) * 2) + var(--player-h))
+      ),
+      560px
+    ) !important;
   }
   /* Annulla il vincolo interno ereditato dal breakpoint tablet (che
      altrimenti si applicherebbe anche qui, rendendo Strumenti più piccolo
@@ -1178,15 +1206,50 @@ html,body{
     width: min(94vw, 480px) !important;
   }
   #widget-noteslist.mobile-slot-top{
-    top: calc(7vh + 95px) !important;
-    top: calc(7dvh + 95px + var(--sat)) !important;
-    max-height: calc(93vh - 448px) !important;
-    max-height: clamp(180px, calc(93dvh - 448px - var(--sat) - var(--sab)), 420px) !important;
+    top: calc(11vh + 95px) !important;
+    top: calc(11dvh + 95px + var(--sat)) !important;
+    max-height: calc(89vh - 354px) !important;
+    max-height: clamp(
+      220px,
+      calc(
+        100dvh
+        - (11dvh + 95px + var(--sat))
+        - (var(--sab) + 47px + (var(--dock-h) - 20px) + (var(--gap) * 2) + var(--player-h) - 32px)
+      ),
+      560px
+    ) !important;
   }
 
   .widget-head{ padding:13px 16px 4px; }
   .widget-body{ padding:0 16px 8px; }
   .cal-day{ font-size:13.5px; }
+
+  /* Timer: sveglia e cronometro sono già dimensionati bene, qui invece
+     rendiamo la vista Timer più "espandibile" — elementi più grandi e
+     più respiro verticale — in modo che sfrutti meglio lo spazio ora
+     disponibile nel widget Strumenti, senza toccare le altre due viste. */
+  .subnav-view[data-view="timer"] #timerDisplay.sw-time{
+    font-size: 46px;
+    margin-bottom: 22px;
+  }
+  .subnav-view[data-view="timer"] .timer-nudge-track{
+    height: 8px;
+    margin: 40px 6px 12px;
+  }
+  .subnav-view[data-view="timer"] .timer-nudge-handle{
+    width: 26px; height: 26px;
+  }
+  .subnav-view[data-view="timer"] .timer-nudge-labels{
+    font-size: 12.5px;
+    margin: 0 6px 18px;
+  }
+  .subnav-view[data-view="timer"] .sw-buttons{
+    gap: 10px;
+  }
+  .subnav-view[data-view="timer"] .sw-btn{
+    padding: 14px 0;
+    font-size: 14px;
+  }
 
   .dock-btn{ width:56px; height:56px; }
   .dock-btn svg{ width:26px; height:26px; }
