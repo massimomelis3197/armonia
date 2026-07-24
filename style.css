@@ -1010,26 +1010,55 @@ html,body{
 }
 
 @media (max-width: 760px){
-  :root{ --dock-h: 100px; }
-  .brand{ font-size:16px; top:16px; left:16px; gap:8px; }
+  /* ---- Viewport dinamico + safe-area (notch/Dynamic Island/home indicator) ----
+     dvh si adatta in automatico alla barra indirizzo che appare/scompare in
+     Safari/Chrome mobile (causa principale di "elementi tagliati" e "spinti
+     troppo in basso": 100vh su iOS/Android è calcolato sul viewport MASSIMO,
+     non su quello realmente visibile). env(safe-area-inset-*) tiene tutta la
+     UI fuori dal notch in alto e dall'home indicator in basso, su qualunque
+     telefono, senza bisogno di media query per singolo modello. */
+  :root{
+    --dock-h: 100px;
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+  }
+
+  html, body{ height: 100vh; height: 100dvh; }
+  .app{ height: 100vh; height: 100dvh; }
+
+  .brand{
+    font-size:16px; gap:8px;
+    top: calc(16px + var(--sat));
+    left: calc(16px + var(--sal));
+  }
 
   /* Tasto "Seleziona Suono" (gear): stessa posizione logica del desktop,
      sempre il più a destra (rightmost) tra i due bottoni in alto a destra. */
   .settings-gear{
     position:fixed !important;
-    top:14px; right:16px; z-index:90;
+    top: calc(14px + var(--sat)); right: calc(16px + var(--sar)); z-index:90;
     width:40px; height:40px;
     margin-left:0;
   }
   .settings-gear svg{ width:18px; height:18px; }
-  .sound-panel{ top:62px !important; right:16px !important; left:auto !important; transform-origin: top right; }
+  .sound-panel{
+    top: calc(62px + var(--sat)) !important;
+    right: calc(16px + var(--sar)) !important;
+    left:auto !important;
+    transform-origin: top right;
+    max-width: calc(100vw - 32px - var(--sal) - var(--sar));
+    max-height: min(60vh, 480px);
+  }
 
   /* Tasto "Clean" (cestino): subito a sinistra del tasto Seleziona Suono,
      stesso ordine del desktop (Clean → Seleziona Suono). Svuota tutti i
      widget aperti (esclusa dock e widget dei suoni). */
   .clear-widgets-btn{
     display:flex; align-items:center; justify-content:center;
-    position:fixed; top:14px; right:66px; z-index:90;
+    position:fixed; z-index:90;
+    top: calc(14px + var(--sat)); right: calc(66px + var(--sar));
     width:40px; height:40px;
     border-radius:50%;
     background: none;
@@ -1051,16 +1080,24 @@ html,body{
   .clear-widgets-btn:hover::before{ background: var(--glass-strong); }
   .clear-widgets-btn:active{ transform: scale(0.9); }
   .clear-widgets-btn svg{ width:18px; height:18px; }
-  .player-wrap{ width:94vw; bottom: calc(var(--dock-h) + 43px); }
+
+  /* Player e Dock: larghezza sempre relativa e mai oltre il bordo schermo
+     (clamp con max-width di sicurezza), sollevati dal fondo dello schermo
+     tenendo conto dell'home indicator via safe-area, così non vengono mai
+     né tagliati né spinti sotto l'area cliccabile reale. */
+  .player-wrap{
+    width: min(94vw, 480px);
+    max-width: calc(100vw - 24px - var(--sal) - var(--sar));
+    bottom: calc(var(--dock-h) + 43px + var(--sab));
+  }
   .player{ padding:22px 18px 20px; gap:14px; }
   .player-title{ font-size:16px; }
 
-  /* Dock della stessa larghezza del player, sollevata leggermente da
-     bordo/player, icone più grandi con più padding esterno e gap ridotto.
-     Sollevata solo di una manciata di pixel (17px) rispetto alla posizione
-     originale, il minimo indispensabile per fare spazio ai page-dots sotto
-     con lo stesso gap standard (16px) usato altrove nel sito. */
-  .dock-wrap{ width:94vw; bottom:47px; }
+  .dock-wrap{
+    width: min(94vw, 480px);
+    max-width: calc(100vw - 24px - var(--sal) - var(--sar));
+    bottom: calc(47px + var(--sab));
+  }
   .dock{ width:100%; justify-content:space-evenly; gap:5px; padding:9px 11px; }
 
   /* Page-dots: unico punto in cui esistono (solo smartphone), spostati
@@ -1068,7 +1105,7 @@ html,body{
      stesso gap di 16px usato altrove (es. Dock/Widget Principale). */
   .page-dots{
     top:auto !important;
-    bottom:8px !important;
+    bottom: calc(8px + var(--sab)) !important;
     left:50% !important;
     transform: translateX(-50%) !important;
   }
@@ -1076,15 +1113,17 @@ html,body{
   /* Orologio: posizione FISSA in alto su OGNI schermata, priorità assoluta,
      non eliminabile, non entra mai nel sistema a pagine/slot. Box leggermente
      ingrandito e testo leggermente ridotto per più margine e leggibilità,
-     evitando ritagli. */
+     evitando ritagli. Il top usa vh come fallback e dvh come valore reale
+     (ignorato dai browser che non lo supportano, che restano su vh). */
   #widget-clock{
     left:50% !important;
     right:auto !important;
     top: 7vh !important;
+    top: calc(7dvh + var(--sat)) !important;
     bottom: auto !important;
     transform: translateX(-50%) scale(0.94) !important;
-    width: 90vw !important;
-    max-width: 390px;
+    width: min(90vw, 390px) !important;
+    max-width: calc(100vw - 24px - var(--sal) - var(--sar));
   }
   .widget.open#widget-clock{ transform: translateX(-50%) scale(1) !important; }
   .clock-big{ font-size: 50px; }
@@ -1101,7 +1140,8 @@ html,body{
     left:50% !important;
     right:auto !important;
     bottom:auto !important;
-    width:94vw !important;
+    width: min(94vw, 480px) !important;
+    max-width: calc(100vw - 24px - var(--sal) - var(--sar));
     transform: translateX(calc(-50% + var(--page-offset, 0) * 1vw)) translateY(14px) scale(0.96) !important;
   }
   #widget-calendar.open, #widget-tools.open, #widget-noteslist.open{
@@ -1109,10 +1149,17 @@ html,body{
   }
 
   /* Gap standardizzato verso l'Orologio (sopra) e verso il Widget
-     Principale (sotto), identico per Calendario, Strumenti e Note/Elenco */
+     Principale (sotto), identico per Calendario, Strumenti e Note/Elenco.
+     max-height è vincolata con clamp(): non scende mai sotto un minimo
+     leggibile (niente contenuto "schiacciato"/tagliato a metà riga) e non
+     supera mai lo spazio realmente disponibile, calcolato con dvh + safe
+     area così da restare corretta anche quando la barra indirizzo si
+     nasconde/mostra durante lo scroll. */
   #widget-calendar.mobile-slot-top, #widget-tools.mobile-slot-top, #widget-noteslist.mobile-slot-top{
     top: calc(7vh + 95px) !important;
+    top: calc(7dvh + 95px + var(--sat)) !important;
     max-height: calc(93vh - 480px) !important;
+    max-height: clamp(180px, calc(93dvh - 480px - var(--sat) - var(--sab)), 420px) !important;
   }
   /* Annulla il vincolo interno ereditato dal breakpoint tablet (che
      altrimenti si applicherebbe anche qui, rendendo Strumenti più piccolo
@@ -1128,11 +1175,13 @@ html,body{
   /* Ridondanza esplicita: Note/Elenco identico in larghezza e altezza al
      Calendario, senza alcuna ambiguità di cascata */
   #widget-noteslist{
-    width: 94vw !important;
+    width: min(94vw, 480px) !important;
   }
   #widget-noteslist.mobile-slot-top{
     top: calc(7vh + 95px) !important;
+    top: calc(7dvh + 95px + var(--sat)) !important;
     max-height: calc(93vh - 448px) !important;
+    max-height: clamp(180px, calc(93dvh - 448px - var(--sat) - var(--sab)), 420px) !important;
   }
 
   .widget-head{ padding:13px 16px 4px; }
@@ -1144,7 +1193,7 @@ html,body{
 }
 
 @media (max-width: 400px){
-  .dock-wrap{ width:94vw; }
+  .dock-wrap{ width: min(94vw, 480px); }
   .dock{ padding:7px 8px; gap:3px; }
   .dock-btn{ width:50px; height:50px; }
   .dock-btn svg{ width:23px; height:23px; }
@@ -1195,7 +1244,11 @@ html,body{
 .autosave-badge.show{ opacity:1; transform: translateY(0); }
 .autosave-badge svg{ width:14px; height:14px; }
 @media (max-width: 760px){
-  .autosave-badge{ left:16px; bottom:calc(var(--dock-h) + 60px); font-size:11.5px; padding:7px 12px; }
+  .autosave-badge{
+    left: calc(16px + env(safe-area-inset-left, 0px));
+    bottom: calc(var(--dock-h) + 60px + env(safe-area-inset-bottom, 0px));
+    font-size:11.5px; padding:7px 12px;
+  }
 }
 
 /* Reduced motion */
