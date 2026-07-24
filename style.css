@@ -1090,13 +1090,14 @@ html,body{
   .clear-widgets-btn svg{ width:18px; height:18px; }
 
   /* Player e Dock: larghezza sempre relativa e mai oltre il bordo schermo
-     (clamp con max-width di sicurezza), sollevati dal fondo dello schermo
-     tenendo conto dell'home indicator via safe-area, così non vengono mai
-     né tagliati né spinti sotto l'area cliccabile reale. */
+     (clamp con max-width di sicurezza). Abbassati verso il fondo reale dello
+     schermo (tenendo comunque conto dell'home indicator via safe-area) per
+     sfruttare lo spazio libero, mantenendo lo stesso gap standard di 16px
+     tra Dock↔Player e tra Dots↔Dock. */
   .player-wrap{
     width: min(94vw, 480px);
     max-width: calc(100vw - 24px - var(--sal) - var(--sar));
-    bottom: calc(var(--dock-h) + 43px + var(--sab));
+    bottom: calc(var(--dock-h) + 24px + var(--sab));
   }
   .player{ padding:22px 18px 20px; gap:14px; }
   .player-title{ font-size:16px; }
@@ -1104,16 +1105,15 @@ html,body{
   .dock-wrap{
     width: min(94vw, 480px);
     max-width: calc(100vw - 24px - var(--sal) - var(--sar));
-    bottom: calc(47px + var(--sab));
+    bottom: calc(28px + var(--sab));
   }
   .dock{ width:100%; justify-content:space-evenly; gap:5px; padding:9px 11px; }
 
-  /* Page-dots: unico punto in cui esistono (solo smartphone), spostati
-     sotto la dock come elemento più in basso di tutta la UI, con lo
-     stesso gap di 16px usato altrove (es. Dock/Widget Principale). */
+  /* Page-dots: unico punto in cui esistono (solo smartphone), appena sopra
+     il bordo/safe-area, il più in basso possibile di tutta la UI. */
   .page-dots{
     top:auto !important;
-    bottom: calc(8px + var(--sab)) !important;
+    bottom: calc(4px + var(--sab)) !important;
     left:50% !important;
     transform: translateX(-50%) !important;
   }
@@ -1178,13 +1178,13 @@ html,body{
   #widget-calendar.mobile-slot-top, #widget-tools.mobile-slot-top, #widget-noteslist.mobile-slot-top{
     top: calc(11vh + 95px) !important;
     top: calc(11dvh + 95px + var(--sat)) !important;
-    max-height: calc(89vh - 386px) !important;
+    max-height: calc(89vh - 367px) !important;
     max-height: clamp(
       220px,
       calc(
         100dvh
         - (11dvh + 95px + var(--sat))
-        - (var(--sab) + 47px + (var(--dock-h) - 20px) + (var(--gap) * 2) + var(--player-h))
+        - (var(--sab) + 28px + (var(--dock-h) - 20px) + (var(--gap) * 2) + var(--player-h))
       ),
       560px
     ) !important;
@@ -1208,13 +1208,13 @@ html,body{
   #widget-noteslist.mobile-slot-top{
     top: calc(11vh + 95px) !important;
     top: calc(11dvh + 95px + var(--sat)) !important;
-    max-height: calc(89vh - 354px) !important;
+    max-height: calc(89vh - 335px) !important;
     max-height: clamp(
       220px,
       calc(
         100dvh
         - (11dvh + 95px + var(--sat))
-        - (var(--sab) + 47px + (var(--dock-h) - 20px) + (var(--gap) * 2) + var(--player-h) - 32px)
+        - (var(--sab) + 28px + (var(--dock-h) - 20px) + (var(--gap) * 2) + var(--player-h) - 32px)
       ),
       560px
     ) !important;
@@ -1223,33 +1223,6 @@ html,body{
   .widget-head{ padding:13px 16px 4px; }
   .widget-body{ padding:0 16px 8px; }
   .cal-day{ font-size:13.5px; }
-
-  /* Timer: sveglia e cronometro sono già dimensionati bene, qui invece
-     rendiamo la vista Timer più "espandibile" — elementi più grandi e
-     più respiro verticale — in modo che sfrutti meglio lo spazio ora
-     disponibile nel widget Strumenti, senza toccare le altre due viste. */
-  .subnav-view[data-view="timer"] #timerDisplay.sw-time{
-    font-size: 46px;
-    margin-bottom: 22px;
-  }
-  .subnav-view[data-view="timer"] .timer-nudge-track{
-    height: 8px;
-    margin: 40px 6px 12px;
-  }
-  .subnav-view[data-view="timer"] .timer-nudge-handle{
-    width: 26px; height: 26px;
-  }
-  .subnav-view[data-view="timer"] .timer-nudge-labels{
-    font-size: 12.5px;
-    margin: 0 6px 18px;
-  }
-  .subnav-view[data-view="timer"] .sw-buttons{
-    gap: 10px;
-  }
-  .subnav-view[data-view="timer"] .sw-btn{
-    padding: 14px 0;
-    font-size: 14px;
-  }
 
   .dock-btn{ width:56px; height:56px; }
   .dock-btn svg{ width:26px; height:26px; }
